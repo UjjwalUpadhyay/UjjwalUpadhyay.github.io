@@ -1,0 +1,26 @@
+<div class="common-header">
+  <nav>
+    <img src="images/logo.jpg"> </img>
+    <span ng-class="{active: isActive('/myprofile')}">
+      <a class="glyphicon glyphicon-asterisk" ui-sref="myprofile"> MyProfile </a>
+    </span>
+    <span ng-class="{active: isActive('/login')}">
+      <a class="glyphicon glyphicon-log-out" ui-sref="login"> SignOut </a>
+    </span>
+  </nav>
+</div>
+
+<div class="container">
+  <form name="userForm">
+    <div class="row">
+      <input class="disabled" type="text" placeholder="User ID" ng-model="userInfo.userid" readonly>
+      <input type="text" required name="password" placeholder="Password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{1,}$/" ng-model="userInfo.password">
+      <p class="errormsg" ng-show="userForm.password.$invalid && userForm.password.$dirty">Password must conatin at least one lower case alphabet, one upper case alphabet, one number and one special character!</p>
+    </div>
+    <div class="row">
+      <input type="text" name="firstname" placeholder="First Name" ng-model="userInfo.firstname">
+      <input type="text" name="lastname" placeholder="Last Name" ng-model="userInfo.lastname">
+    </div>
+  <button ng-click="update(userInfo)" ng-disabled="userForm.$invalid" type="submit"> Update </button>
+</form>
+</div>

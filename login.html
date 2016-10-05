@@ -1,0 +1,21 @@
+<div class="header">
+  <p>
+    Account Login
+  </p>
+</div>
+<div class="login-container">
+  <form name="userForm">
+    <div>
+      <input id="userid" type="text" placeholder="User ID" ng-model="loginUserId" required>
+    </div>
+    <div>
+      <input id="password" type="password" required name="password" placeholder="Password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{1,}$/" ng-model="loginPassword">
+      <p class="errormsg" ng-show="userForm.password.$invalid && userForm.password.$dirty">Password must conatin at least one lower case alphabet, one upper case alphabet, one number and one special character!</p>
+    </div>
+    <div class="remember-me">
+      <input type="checkbox" ng-model="rememberMe"> Remember Me
+    </div>
+    <button type="submit" ng-disabled="userForm.$invalid" ng-click="nextView1(rememberMe)"> Login </button>
+    <p class="invalid-creds" ng-show="invalidCreds">Invalid credentials. Please try again! </p>
+  </form>
+</div>
