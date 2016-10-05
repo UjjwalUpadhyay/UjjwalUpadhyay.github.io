@@ -34,7 +34,7 @@ app.controller("adminController", function($scope, $state, $location) {
            $state.go("myprofile");
          }
        }
-       if (i===usersLists.length) {
+       if (i===usersLists.length+1) {
          $scope.invalidCreds = true;
        }
     }
