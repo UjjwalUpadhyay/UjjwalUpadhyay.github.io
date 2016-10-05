@@ -32,9 +32,10 @@ app.controller("adminController", function($scope, $state, $location) {
            $scope.userInfo.lastname=$scope.userInfo.lastname?$scope.userInfo.lastname:usersLists[i].lastname;
            $scope.invalidCreds = false;
            $state.go("myprofile");
+           break;
          }
        }
-       if (i===usersLists.length+1) {
+       if (i===usersLists.length) {
          $scope.invalidCreds = true;
        }
     }
