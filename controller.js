@@ -8,7 +8,7 @@ app.controller("adminController", function($scope, $state, $location) {
                         "lastname": "admin"
                       };
 
-  if (Object.keys(JSON.parse(localStorage.getItem('userObj'))).length===0) {
+  if (localStorage.getItem('userObj')===null || Object.keys(JSON.parse(localStorage.getItem('userObj'))).length===0) {
       localStorage.setItem('userObj', JSON.stringify(userObj));
   }
   $scope.userListObj = localStorage.getItem('userObj')?JSON.parse(localStorage.getItem('userObj')):{};
