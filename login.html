@@ -15,7 +15,8 @@
     <div class="remember-me">
       <input type="checkbox" ng-model="rememberMe"> Remember Me
     </div>
-    <button type="submit" ng-disabled="userForm.$invalid" ng-click="nextView1(rememberMe)"> Login </button>
+    <button type="submit" ng-disabled="userForm.$invalid" ng-click="nextView1(rememberMe, loginUserId, loginPassword)"> Login </button>
     <p class="invalid-creds" ng-show="invalidCreds">Invalid credentials. Please try again! </p>
+    <p class="invalid-creds" ng-show="invalidUserMsg">Invalid UserId. Please try again </p>
   </form>
 </div>

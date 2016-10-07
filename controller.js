@@ -1,70 +1,85 @@
 var app = angular.module('app', ['ngAnimate', 'ui.router', 'angularUtils.directives.dirPagination']);
 app.controller("adminController", function($scope, $state, $location) {
-  $scope.userList = localStorage.getItem('users')?JSON.parse(localStorage.getItem('users')):[];
+  var userObj = {};
+  var userObjid = "admin";
+  userObj[userObjid] = {
+                        "password": "Admin123#",
+                        "firstname": "admin",
+                        "lastname": "admin"
+                      };
+
+  if (Object.keys(JSON.parse(localStorage.getItem('userObj'))).length===0) {
+      localStorage.setItem('userObj', JSON.stringify(userObj));
+  }
+  $scope.userListObj = localStorage.getItem('userObj')?JSON.parse(localStorage.getItem('userObj')):{};
+  $scope.userList = [];
+  for (var key in $scope.userListObj) {
+    $scope.userList.push({
+        userid: key,
+        password: $scope.userListObj[key].password,
+        firstname: $scope.userListObj[key].firstname,
+        lastname: $scope.userListObj[key].lastname
+      });
+  }
   $scope.invalidCreds = false;
   $scope.rememberMe = false;
   $scope.loginUserId = localStorage.getItem('username')?localStorage.getItem('username'):'';
   $scope.loginPassword = localStorage.getItem('password')?localStorage.getItem('password'):'';
-  $scope.nextView1 = function(rememberMe) {
-    var userid = document.getElementById('userid').value;
-    var password = document.getElementById('password').value;
-    var usersLists = JSON.parse(localStorage.getItem('users'));
+  $scope.nextView1 = function(rememberMe, userid, password) {
+    var usersLists = JSON.parse(localStorage.getItem('userObj'));
 
     /* Remember me code */
       if (rememberMe) {
-        localStorage.username = document.getElementById('userid').value;
-        localStorage.password = document.getElementById('password').value;
+        localStorage.username = userid;
+        localStorage.password = password;
         $scope.loginUserId = localStorage.getItem('username');
         $scope.loginPassword = localStorage.getItem('password');
       }
     /* End of code */
 
     /* Redirect to addUser page if user is admin else redirect to myProfile page */
-    if (userid==='admin' && password==='Admin123#') {
+    if ('admin' in usersLists && userid === 'admin' && password===JSON.parse(localStorage.getItem("userObj")).admin.password) {
       $scope.invalidCreds = false;
       $state.go("adduser");
     } else if (usersLists) {
-       for (var i=0; i<usersLists.length; i++) {
-         if (usersLists[i].userid===userid && usersLists[i].password===password) {
-           $scope.userInfo.userid=$scope.userInfo.userid?$scope.userInfo.userid:usersLists[i].userid;
-           $scope.userInfo.password=$scope.userInfo.password?$scope.userInfo.password:usersLists[i].password;
-           $scope.userInfo.firstname=$scope.userInfo.firstname?$scope.userInfo.firstname:usersLists[i].firstname;
-           $scope.userInfo.lastname=$scope.userInfo.lastname?$scope.userInfo.lastname:usersLists[i].lastname;
-           $scope.invalidCreds = false;
-           $state.go("myprofile");
-           break;
-         }
-       }
-       if (i===usersLists.length) {
-         $scope.invalidCreds = true;
-       }
+      if (userid in usersLists) {
+        if(password===usersLists[userid].password) {
+          $scope.userInfo.userid = userid;
+          $scope.userInfo.password = usersLists[userid].password;
+          $scope.userInfo.firstname = usersLists[userid].firstname;
+          $scope.userInfo.lastname = usersLists[userid].lastname;
+          $state.go("myprofile");
+        } else {
+            $scope.invalidUserMsg = false;
+            $scope.invalidCreds = true;
+        }
+      } else {
+        $scope.invalidCreds = false;
+        $scope.invalidUserMsg = true;
+      }
     }
     /* End of code */
   }
   $scope.userInfo = {};
   $scope.showDuplicateMssg=false;
+
+  //Function called on addUser
   $scope.nextView2 = function(userInfo) {
     var duplicateUser=false; //Check for duplicate user id
-    for (var i=0; i<$scope.userList.length; i++) {
-      if ($scope.userList[i].userid===userInfo.userid) {
-        duplicateUser = true;
-        break;
-      }
-    }
-    // Push to userList
-    if (!duplicateUser) {
-      $state.go("viewuser");
+    var userListObj = JSON.parse(localStorage.getItem('userObj'));
+    if(userInfo.userid in userListObj) {
+      $scope.showDuplicateMssg = true;
+    } else {
+      userListObj[userInfo.userid]={"password": userInfo.password, "firstname": userInfo.firstname, "lastname": userInfo.lastname};
+      localStorage.setItem("userObj", JSON.stringify(userListObj));
       $scope.userList.push({
         userid: userInfo.userid,
         password: userInfo.password,
         firstname: userInfo.firstname,
         lastname: userInfo.lastname
       });
-      localStorage.setItem('users', JSON.stringify($scope.userList));
-    } else {
-      $scope.showDuplicateMssg = true;
+      $state.go("viewuser");
     }
-
   }
   // Function for sorting table columns
   $scope.sort = function(keyname) {
@@ -73,6 +88,9 @@ app.controller("adminController", function($scope, $state, $location) {
    }
   // Function for updating the userInfo values
   $scope.update = function(userInfo) {
+    var obj=JSON.parse(localStorage.getItem("userObj"));
+    obj[userInfo.userid]={"password": userInfo.password, "firstname": userInfo.firstname, "lastname": userInfo.lastname};
+    localStorage.setItem('userObj', JSON.stringify(obj));
     for (var i=0; i<$scope.userList.length; i++) {
       if ($scope.userList[i].userid===userInfo.userid) {
         $scope.userList[i].password = userInfo.password;
@@ -81,7 +99,7 @@ app.controller("adminController", function($scope, $state, $location) {
       }
     }
   }
-  // Function to highlight the active table
+  // Function to highlight the active tab
   $scope.isActive = function (viewLocation) {
      var active = (viewLocation === $location.path());
      return active;
